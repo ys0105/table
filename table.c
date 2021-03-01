@@ -12,8 +12,6 @@
 
 #define MARGIN (1)
 //#define DEBUG
-#define FILE_TOO_BIG 1000000 /* Quando viene letto 1kb si usa un file esterno */
-#define AUX_FILE ("__aux__.tbx")
 #define UNICODE
 
 #include <stdio.h>
@@ -22,7 +20,7 @@
 #include <string.h>
 
 #ifdef _WIN32
-/** 
+/**
  * Se non stiamo compilando su linux verra' usata la mia
  * implementazione della funzione getline (_GNU_SOURCE)
  */
@@ -46,7 +44,7 @@ struct comment
   const char* last_line;
 };
 
-struct comment comment_styles [] = 
+struct comment comment_styles [] =
 {
 #define COM(lang, single, ms, me) {lang, single, ms, me}
 #define CSTYLE "c|cpp|cc|h|java|hpp|php|js|y"
@@ -69,7 +67,7 @@ struct field
 #define ALIG_RIGHT 02
 
   unsigned alignment; /* 0 sx 1 dx 2 centro */
-  int fieldno;	
+  int fieldno;
   char* buff; /* Contenuto (testo da stampare) */
 };
 
@@ -82,117 +80,28 @@ struct qnode
 #define RECORD_SEPARATOR 30
 #define UNIT_SEPARATOR 31
 
-#ifdef UNICODE
-#  define LIGHT_HR "\u2500"
-#  define HEAVY_HR "\u2501"
-#  define LIGHT_VT "\u2502"
-#  define HEAVY_VT "\u2503"
-#  define LIGHT_TRIPLE_DASH_HR "\u2504"
-#  define HEAVY_TRIPLE_DASH_HR "\u2505"
-#  define LIGHT_TRIPLE_DASH_VT "\u2506"
-#  define HEAVY_TRIPLE_DASH_VT "\u2507"
-#  define LIGHT_QUADRUPLE_DASH_HR "\u2508"
-#  define HEAVY_QUADRUPLE_DASH_HR "\u2509"
-#  define LIGHT_QUADRUPLE_DASH_VT "\u250A"
-#  define HEAVY_QUADRUPLE_DASH_VT "\u250B"
-#  define LIGHT_DOWN_AND_RIGHT "\u250C"
-#  define DOWN_LIGHT_AND_RIGHT_HEAVY "\u250D"
-#  define DOWN_HEAVY_AND_RIGHT_LIGHT "\u250E"
-#  define HEAVY_DOWN_AND_RIGHT "\u250F"
-#  define LIGHT_DOWN_AND_LEFT "\u2510"
-#  define DOWN_LIGHT_AND_LEFT_HEAVY "\u2511"
-#  define DOWN_HEAVY_AND_LEFT_LIGHT "\u2512"
-#  define HEAVY_DOWN_AND_LEFT "\u2513"
-#  define LIGHT_UP_AND_RIGHT "\u2514"
-#  define UP_LIGHT_AND_RIGHT_HEAVY "\u2515"
-#  define UP_HEAVY_AND_RIGHT_LIGHT "\u2516"
-#  define HEAVY_UP_AND_RIGHT "\u2517"
-#  define LIGHT_UP_AND_LEFT "\u2518"
-#  define UP_LIGHT_AND_LEFT_HEAVY "\u2519"
-#  define UP_HEAVY_AND_LEFT_LIGHT "\u251A"
-#  define HEAVY_UP_AND_LEFT "\u251B"
-#  define LIGHT_VT_AND_RIGHT "\u251C"
-#  define VT_LIGHT_AND_RIGHT_HEAVY "\u251D"
-#  define UP_HEAVY_AND_RIGHT_DOWN_LIGHT "\u251E"
-#  define DOWN_HEAVY_AND_RIGHT_UP_LIGHT "\u251F"
-#  define VT_HEAVY_AND_RIGHT_LIGHT "\u2520"
-#  define DOWN_LIGHT_AND_RIGHT_UP_HEAVY "\u2521"
-#  define UP_LIGHT_AND_RIGHT_DOWN_HEAVY "\u2522"
-#  define HEAVY_VT_AND_RIGHT "\u2523"
-#  define LIGHT_VT_AND_LEFT "\u2524"
-#  define VT_LIGHT_AND_LEFT_HEAVY "\u2525"
-#  define UP_HEAVY_AND_LEFT_DOWN_LIGHT "\u2526"
-#  define DOWN_HEAVY_AND_LEFT_UP_LIGHT "\u2527"
-#  define VT_HEAVY_AND_LEFT_LIGHT "\u2528"
-#  define DOWN_LIGHT_AND_LEFT_UP_HEAVY "\u2529"
-#  define UP_LIGHT_AND_LEFT_DOWN_HEAVY "\u252A"
-#  define HEAVY_VT_AND_LEFT "\u252B"
-#  define LIGHT_DOWN_AND_HR "\u252C"
-#  define LEFT_HEAVY_AND_RIGHT_DOWN_LIGHT "\u252D"
-#  define RIGHT_HEAVY_AND_LEFT_DOWN_LIGHT "\u252E"
-#  define DOWN_LIGHT_AND_HR_HEAVY "\u252F"
-#  define DOWN_HEAVY_AND_HR_LIGHT "\u2530"
-#  define RIGHT_LIGHT_AND_LEFT_DOWN_HEAVY "\u2531"
-#  define LEFT_LIGHT_AND_RIGHT_DOWN_HEAVY "\u2532"
-#  define HEAVY_DOWN_AND_HR "\u2533"
-#  define LIGHT_UP_AND_HR "\u2534"
-#  define LEFT_HEAVY_AND_RIGHT_UP_LIGHT "\u2535"
-#  define RIGHT_HEAVY_AND_LEFT_UP_LIGHT "\u2536"
-#  define UP_LIGHT_AND_HR_HEAVY "\u2537"
-#  define UP_HEAVY_AND_HR_LIGHT "\u2538"
-#  define RIGHT_LIGHT_AND_LEFT_UP_HEAVY "\u2539"
-#  define LEFT_LIGHT_AND_RIGHT_UP_HEAVY "\u253A"
-#  define HEAVY_UP_AND_HR "\u253B"
-#  define LIGHT_VT_AND_HR "\u253C"
-#  define LEFT_HEAVY_AND_RIGHT_VT_LIGHT "\u253D"
-#  define RIGHT_HEAVY_AND_LEFT_VT_LIGHT "\u253E"
-#  define VT_LIGHT_AND_HR_HEAVY "\u253F"
-#  define UP_HEAVY_AND_DOWN_HR_LIGHT "\u2540"
-#  define DOWN_HEAVY_AND_UP_HR_LIGHT "\u2541"
-#  define VT_HEAVY_AND_HR_LIGHT "\u2542"
-#  define LEFT_UP_HEAVY_AND_RIGHT_DOWN_LIGHT "\u2543"
-#  define RIGHT_UP_HEAVY_AND_LEFT_DOWN_LIGHT "\u2544"
-#  define LEFT_DOWN_HEAVY_AND_RIGHT_UP_LIGHT "\u2545"
-#  define RIGHT_DOWN_HEAVY_AND_LEFT_UP_LIGHT "\u2546"
-#  define DOWN_LIGHT_AND_UP_HR_HEAVY "\u2547"
-#  define UP_LIGHT_AND_DOWN_HR_HEAVY "\u2548"
-#  define RIGHT_LIGHT_AND_LEFT_VT_HEAVY "\u2549"
-#  define LEFT_LIGHT_AND_RIGHT_VT_HEAVY "\u254A"
-#  define HEAVY_VT_AND_HR "\u254B"
-#  define LIGHT_DBL_DASH_HR "\u254C"
-#  define HEAVY_DBL_DASH_HR "\u254D"
-#  define LIGHT_DBL_DASH_VT "\u254E"
-#  define HEAVY_DBL_DASH_VT "\u254F"
-#  define DBL_HR "\u2550"
-#  define DBL_VT "\u2551"
-#  define DOWN_SINGLE_AND_RIGHT_DBL "\u2552"
-#  define DOWN_DBL_AND_RIGHT_SINGLE "\u2553"
-#  define DBL_DOWN_AND_RIGHT "\u2554"
-#  define DOWN_SINGLE_AND_LEFT_DBL "\u2555"
-#  define DOWN_DBL_AND_LEFT_SINGLE "\u2556"
-#  define DBL_DOWN_AND_LEFT "\u2557"
-#  define UP_SINGLE_AND_RIGHT_DBL "\u2558"
-#  define UP_DBL_AND_RIGHT_SINGLE "\u2559"
-#  define DBL_UP_AND_RIGHT "\u255A"
-#  define UP_SINGLE_AND_LEFT_DBL "\u255B"
-#  define UP_DBL_AND_LEFT_SINGLE "\u255C"
-#  define DBL_UP_AND_LEFT "\u255D"
-#  define VT_SINGLE_AND_RIGHT_DBL "\u255E"
-#  define VT_DBL_AND_RIGHT_SINGLE "\u255F"
-#  define DBL_VT_AND_RIGHT "\u2560"
-#  define VT_SINGLE_AND_LEFT_DBL "\u2561"
-#  define VT_DBL_AND_LEFT_SINGLE "\u2562"
-#  define DBL_VT_AND_LEFT "\u2563"
-#  define DOWN_SINGLE_AND_HR_DBL "\u2564"
-#  define DOWN_DBL_AND_HR_SINGLE "\u2565"
-#  define DBL_DOWN_AND_HR "\u2566"
-#  define UP_SINGLE_AND_HR_DBL "\u2567"
-#  define UP_DBL_AND_HR_SINGLE "\u2568"
-#  define DBL_UP_AND_HR "\u2569"
-#  define VT_SINGLE_AND_HR_DBL "\u256A"
-#  define VT_DBL_AND_HR_SINGLE "\u256B"
-#  define DBL_VT_AND_HR "\u256C"
-#endif
+#define DBL_UP_AND_LEFT "\u255D"
+#define DBL_UP_AND_HR "\u2569"
+#define DBL_UP_AND_RIGHT "\u255A"
+#define DBL_VT_AND_LEFT "\u2563"
+#define DBL_VT_AND_HR "\u256C"
+#define DBL_VT_AND_RIGHT "\u2560"
+#define DBL_DOWN_AND_LEFT "\u2557"
+#define DBL_DOWN_AND_HR "\u2566"
+#define DBL_HR "\u2550"
+#define DBL_VT "\u2551"
+#define DBL_DOWN_AND_RIGHT "\u2554"
+#define LIGHT_UP_AND_LEFT "\u2518"
+#define LIGHT_UP_AND_HR "\u2534"
+#define LIGHT_UP_AND_RIGHT "\u2514"
+#define LIGHT_VT_AND_LEFT "\u2524"
+#define LIGHT_VT_AND_HR "\u253C"
+#define LIGHT_VT_AND_RIGHT "\u251C"
+#define LIGHT_DOWN_AND_LEFT "\u2510"
+#define LIGHT_DOWN_AND_HR "\u252C"
+#define LIGHT_HR "\u2500"
+#define LIGHT_VT "\u2502"
+#define LIGHT_DOWN_AND_RIGHT "\u250C"
 
 struct table_style
 {
@@ -200,7 +109,7 @@ struct table_style
 #define HAS_HEADER_TOP 0x01
 #define HAS_HEADER_BOTTOM 0x02
 #define HAS_LAST_LINE 0x04
-#define HAS_ROW_SEP 0x10 
+#define HAS_ROW_SEP 0x10
 #define IS_UNICODE 0x20
 
   int style;
@@ -209,7 +118,7 @@ struct table_style
   const char* normalcolsep;
   /**
    *
-   * Riga di intestazione superiore 
+   * Riga di intestazione superiore
    * Nota: HT sta per header top */
   const char* htlc; /* Left Corner */
   const char* htfill; /* Separatore */
@@ -218,7 +127,7 @@ struct table_style
 
   /**
    *
-   * Riga di intestazione inferiore 
+   * Riga di intestazione inferiore
    * Nota: HB sta per header bottom */
   const char* hblc; /* Left Corner */
   const char* hbfill; /* Separatore */
@@ -226,8 +135,8 @@ struct table_style
   const char* hbcs; /* Column separator */
 
   /**
-   * 
-   * Ultima riga della tabella 
+   *
+   * Ultima riga della tabella
    * Nota: ET sta per end of table */
   const char* etlc;
   const char* etfill;
@@ -238,13 +147,13 @@ struct table_style
 
 #define HB(p1, p2, p3, p4) .hblc = p1, .hbfill = p2, .hbcs = p3, .hbrc = p4
 
-#define LAST(p1, p2, p3, p4) .etlc = p1, .etrc = p4, .etfill = p2, .etcs = p3 
+#define LAST(p1, p2, p3, p4) .etlc = p1, .etrc = p4, .etfill = p2, .etcs = p3
 
 };
 
 #define STYLE_MYSQL 0
 #define STYLE_COMPACT 1
-#define STYLE_SEPARATED 2 
+#define STYLE_SEPARATED 2
 #define STYLE_DOTS 3
 #define STYLE_UNICODE 4
 #define STYLE_UNICODE_DOUBLE 5
@@ -324,21 +233,18 @@ static struct table_style styles [] =
 
 struct buffer
 {
-  struct table_style* table_style; 
+  struct table_style* table_style;
   struct comment* comment;
-  /* 1:  Se l'input e' diviso tra due file, 0: No */
-#define BUFF_FRAGMENTED 0
-#define BUFF_NO_HEADER 1
   int options;
   size_t bufsize;
   /* Quante colonne? */
-  int cols; 
+  int cols;
   /* Dimensione del campo piu largo x colonna */
-  size_t* field_max_size; 
+  size_t* field_max_size;
   /* Puntatore al prossimo campo da stampare */
-  struct qnode* head; 
+  struct qnode* head;
   /* Puntatore all'ultimo campo usato per appendere un nuovo campo*/
-  struct qnode* tail; 
+  struct qnode* tail;
 };
   int
 fputsn(const char* str, int times)
@@ -443,7 +349,7 @@ print_special_row(const struct buffer* b, int rowtype)
 #define FIND_CASE 1
 #define ISALPHA(c) ((c > 0x60 && c < 0x7b) || (c > 0x40 && c < 0x5b) ? 1 : 0)
 #define TOL(ch) (ISALPHA(ch) ? 0x20 | ch : ch)
-  int 
+  int
 strlist(const char* string, const char* substr, char del, int sensitive)
 {
   int matching = 0;
@@ -452,21 +358,21 @@ strlist(const char* string, const char* substr, char del, int sensitive)
   int sl = strlen(substr);
   while(*string)
     {
-      if(sensitive ? 
-         TOL(*string) == TOL(*(substr + offset)) : 
+      if(sensitive ?
+         TOL(*string) == TOL(*(substr + offset)) :
              *string  ==     *(substr + offset))
         {
           ++matching;
           ++offset;
         }
-      else 
+      else
         {
-          if(del == *(string) || !(*string)) 
+          if(del == *(string) || !(*string))
             {
               if(matching == sl)
                 {
                   found = 1;
-                  break; 
+                  break;
                 }
             }
           while(*(++string) != del && *string);
@@ -530,7 +436,7 @@ buffer_destroy(struct buffer** buff)
   return 0;
 }
 
-  struct field* 
+  struct field*
 field_constructor(const char* string)
 {
   struct field* info = (struct field*) malloc(sizeof(*info));
@@ -593,47 +499,7 @@ table_size(struct buffer* buff)
     }
 }
 
-  int
-serialize(struct buffer* buff, const char* string)
-{
-  int retval = 0;
-  FILE* fp = fopen(string, "a");
-  if(NULL == fp) 
-    {
-      fprintf(stderr, "serialize(): impossibile aprire il file");
-      retval = 1; 
-      buffer_destroy(&buff);
-    }
-  else
-    {
-      struct qnode* q = NULL;
-      for(q = buff->head; NULL != q;q = q->next_field)
-        {
-          fprintf(fp, "%lu|%i|%i|%s\n", q->field->chars, q->field->alignment,
-              q->field->fieldno, q->field->buff); 
-          buff->cols = (q->field->fieldno > buff->cols) ? q->field->fieldno : buff->cols;
-        }
-      /* Cerca il numero massimo per ogni colonna prima di liberare la memoria */
-      table_size(buff);
-      struct qnode* tmp = NULL;
-      for(q = buff->head; NULL != q; )
-        {
-          field_destructor(q->field);
-          free(q->field);
-          tmp = q;
-          q = q->next_field;
-          free(tmp);
-        }
-      buff->head = NULL;
-      buff->tail = NULL;
-      buff->bufsize = 0;
-      buff->options = 1;
-    }
-  fclose(fp);
-  return retval;
-}
-
-  int
+int
 append_field(struct buffer* field_list,int field_no, int alig,
     size_t field_size, const char* string)
 {
@@ -659,16 +525,6 @@ append_field(struct buffer* field_list,int field_no, int alig,
       field_list->tail->next_field = to_append;
       field_list->tail = to_append;
     }
-  if(field_list->bufsize >= FILE_TOO_BIG) 
-    { 
-      field_list->options = 1;
-      field_list->bufsize = 0;
-      serialize(field_list, AUX_FILE); 
-#if 1 && defined(DEBUG)
-      fprintf(stderr, "File troppo grande, usato il file ausiliario");
-#endif
-
-    }
   return field_list->cols;
 }
 
@@ -679,28 +535,8 @@ printn(char c, int n)
   for(;i < n;++i) { putchar(c); }
 }
 
-  int
-remove_trailing_withespaces(char* string, int strlen)
-{
-  int removed = 0, spaces = 0;
-  int i = strlen;
-  for(;i>-1;--i)
-    {
-      if(' ' == *(string + i))
-        {
-          ++spaces; 
-          ++removed;
-        }
-      else 
-        {
-          break;
-        }
-    }
-  if(0 != spaces) { free(string - spaces); }
-  return spaces; 
-}
 
-  static inline void
+static inline void
 text_center(const char* buff, int bufsize, int max)
 {
   int start = (int)(.5 * (max - bufsize - MARGIN - 1));
@@ -710,12 +546,12 @@ text_center(const char* buff, int bufsize, int max)
   printn(' ', start + recupero);
 }
 
-#define TEXT_RIGHT(_buffer, _buffer_size, limit) \
-  printn(' ', limit - MARGIN * 2 - _buffer_size); \
+#define TEXT_RIGHT(_buffer, _buffer_size, limit)   \
+  printn(' ', limit - MARGIN * 2 - _buffer_size);  \
   fputs(_buffer, stdout);
 
-#define TEXT_LEFT(_buffer, _buffer_size, limit) \
-  fputs(_buffer, stdout); \
+#define TEXT_LEFT(_buffer, _buffer_size, limit)    \
+  fputs(_buffer, stdout);                          \
   printn(' ', limit - _buffer_size - MARGIN - 1);
 
   static inline void
@@ -762,47 +598,9 @@ struct columns
   struct colpos* first_col;
   struct colpos* last_col;
 };
-  void
-reverse(buf_state* buff)
-{
-  ssize_t bytes;
-  char* line = NULL;
-  size_t stn = 0;
-  int tablesize = -1;
-  int i = 0;
-  struct columns* cols = malloc(sizeof(*cols));
-  cols->first_col = cols->last_col = NULL;
-  cols->cols = 0;
-  while(-1 != (bytes = getline(&line, &stn, buff->fptr)))	
-    {
-      buff->bytes += bytes;
-      buff->cols = 0;
-      ++buff->rows;
-      if(!is_rowsep(line))
-        {
-          for(i = 1; i < bytes; ++i)
-            if(*(line + i) != ' ') break;
-          for(; i < bytes; ++i)
-            {
-              if(*(line + i) == '|') 
-                {
-                  putchar(';');
-                  ++i;
-                  while(*(line + i + 1) == ' ') ++i;
-                }
-              else
-                putchar(*(line + i));
-            }
-          putchar('\n');
-        }
-#ifdef DEBUG
-      else { printf("Separatore, riga: %d\n", buff->rows); }
-#endif
-    }
-}
 
 #define WHITESPACE(n) printn(' ', n)
-#define PUT_MARGIN() WHITESPACE(MARGIN) 
+#define PUT_MARGIN() WHITESPACE(MARGIN)
 
 #define PUT_FIELD(buff, b, siz, limit, alignment, fieldno) \
     fputs(buff->table_style->normalcolsep, stdout); \
@@ -819,67 +617,13 @@ reverse(buf_state* buff)
           }\
       }
 
-  void
-print_external_file(const struct buffer* b, const char* string)
-{
-  FILE* fp = fopen(string, "r");
-  char* line = NULL;
-  ssize_t bytes = 0;
-  size_t stn = 0;
-
-  char* saveptr = NULL;
-  char* token = NULL;
-  char* buff = NULL;
-  int fieldno = 0;
-  int align = 0;
-  int rows = 0;
-  int siz = 0;
-  int cols = b->cols;
-  while(-1 != (bytes = getline(&line, &stn, fp)))	
-    {
-      /* '\n' = 1 byte */
-      if(bytes > 1)
-        {
-
-          //sscanf()
-          token = strtok_r(line, "|", &saveptr);
-          siz = atoi(token);
-          token = strtok_r(NULL, "|", &saveptr);
-          align = atoi(token);
-          token = strtok_r(NULL, "|", &saveptr);
-          fieldno = atoi(token);
-          token = strtok_r(NULL, "|", &saveptr);
-          buff = token;
-          buff[strlen(buff) - 1] = '\0';
-
-
-          print_comment(b);
-//          row_sep(b, 1);
-          print_comment(b);
-          PUT_FIELD(b, buff, siz, b->field_max_size[fieldno], align, fieldno)
-          print_comment(b);
- //         row_sep(b, 1);
-          print_comment(b);
-//          row_sep(b, 1);
-          if(fieldno + 1 == cols)
-            ++rows;
-        }
-    }
-  free(line);
-  fclose(fp);
-  remove(string);
-}
-  void
+void
 print_table(struct buffer* b)
 {
 
   if(0 != b->bufsize)
     {
       int cols = b->cols;
-      if(b->options)
-        {
-          print_external_file(b, AUX_FILE);
-        }
       struct qnode* it = b->head;
       /* Stampa della prima riga */
       print_comment(b);
@@ -930,13 +674,13 @@ table(buf_state* buff, const char* separator, int comment_style, int tstyle)
   memcpy(b->table_style, &styles[tstyle], sizeof(struct table_style));
 
   int idx, virtual_fields = 0,cols = 0, alig = ALIG_CENTER;
-  while(-1 != (bytes = getline(&line, &stn, buff->fptr)))	
+  while(-1 != (bytes = getline(&line, &stn, buff->fptr)))
     {
       buff->bytes += bytes;
       buff->cols = idx = 0;
       if(0 != buff->rows)
         {
-          alig = ALIG_RIGHT; 
+          alig = ALIG_RIGHT;
         }
       ++buff->rows;
       /* '\n' = 1 byte */
@@ -966,7 +710,7 @@ table(buf_state* buff, const char* separator, int comment_style, int tstyle)
               token = strtok(NULL, separator);
               ++cols;
               if(NULL != token)
-                { 
+                {
                   switch(*token)
                     {
                       case '>':
@@ -987,19 +731,15 @@ table(buf_state* buff, const char* separator, int comment_style, int tstyle)
                 }
             }
         }
-      if(cols > virtual_fields) { virtual_fields = cols; }
+      if(cols > virtual_fields)
+	virtual_fields = cols;
       cols = 0;
     }
-  free(line);
-  if(b->options == 1 && b->cols < virtual_fields)
-  {
-    b->cols = virtual_fields;
-    b->field_max_size = realloc(b->field_max_size, sizeof(size_t) * virtual_fields);
-  }
+  free (line);
   b->cols = virtual_fields;
   table_size(b);
 
-#if 0 && defined(DEBUG) 
+#if 0 && defined(DEBUG)
   buff_dump(b);
 #endif
 
@@ -1008,22 +748,19 @@ table(buf_state* buff, const char* separator, int comment_style, int tstyle)
   return 0;
 }
 
-  int 
+int
 main(int argc, char* const argv[])
 {
   int options;
   buf_state buff = BUFF_INIT;
-  int rev = 0;
   int tstyle = 0;
   char* st = NULL;
-  remove(AUX_FILE);
   int cstyle = -1;
   struct option long_options[] =
   {
     {"no-header", no_argument,       0, 'a'},
     {"style",     required_argument, 0, 's'},
     {"file",      required_argument, 0, 'f'},
-    {"reverse",   required_argument, 0, 'r'},
     {"author",    no_argument,       0, 'a'}
   };
   int optind = 0;
@@ -1035,56 +772,49 @@ main(int argc, char* const argv[])
         case 'c':
             {
               int i, n = COMMENTNO;
-              for(i = 0; i < n; ++i) 
+              for(i = 0; i < n; ++i)
                 {
-                  if(strlist(comment_styles[i].lang, optarg, '|', 1))
+                  if(strlist (comment_styles[i].lang, optarg, '|', 1))
                     {
-                      cstyle = i; 
+                      cstyle = i;
                       break;
                     }
                 }
               break;
             }
-        case 'r':
-          rev = 1;
-          break;
         case 'a':
           printf("Autore: Trachi Yassin 2020 (v.1.0)\n");
           exit(EXIT_SUCCESS);
           break;
         case 'P':
-          printf("PREFISSO RIGA"); 
+          printf("PREFISSO RIGA");
           break;
         case 'S':
-          printf("SUFFISSO RIGA"); 
+          printf("SUFFISSO RIGA");
           break;
         case 'f':
           buff.fptr = fopen(optarg, "r");
           if(!buff.fptr)
             {
-              fprintf(stderr, "Impossibile aprire il file");
-              exit(EXIT_FAILURE);
+              fprintf (stderr, "Impossibile aprire il file");
+              exit (EXIT_FAILURE);
             }
           break;
         case 's':
-          tstyle = STRTOSTYLE(optarg);
+          tstyle = STRTOSTYLE (optarg);
           break;
         default:
-          fprintf(stderr, "Opzione non riconosciuta");
-          exit(EXIT_FAILURE);
-      }	
-  }	
-  if(rev == 0)
-    {
-      if(NULL == st) { table(&buff, ";", cstyle, tstyle); }
-      else           { table(&buff, st, cstyle, tstyle);  }
-    }
-  else 
-    {
-      reverse(&buff); 
-    }
-  if(stdin != buff.fptr) { fclose(buff.fptr); }
-  return EXIT_SUCCESS;	
+          fprintf (stderr, "Opzione non riconosciuta");
+          exit (EXIT_FAILURE);
+      }
+  }
+    if(NULL == st)
+      table (&buff, ";", cstyle, tstyle);
+    else
+      table (&buff, st, cstyle, tstyle);
+  if(stdin != buff.fptr)
+    fclose (buff.fptr);
+  return EXIT_SUCCESS;
 }
 
 #ifdef _WIN32
