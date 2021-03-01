@@ -1,5 +1,5 @@
 all: table.c
-	gcc table.c -o table
+	gcc -Wall -pedantic  -std=c99 table.c -o table
 	mv table /usr/bin
 
 clean:
